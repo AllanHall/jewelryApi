@@ -10,6 +10,6 @@ namespace jewelryapi.models
     public string description { get; set; }
     public int stock { get; set; }
     public int price { get; set; }
-    public DateTime dateordered { get; set; }
+    public DateTime dateordered { get; set; } = DateTime.Now;
   }
 }

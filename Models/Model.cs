@@ -11,5 +11,7 @@ namespace jewelryapi.models
     public int stock { get; set; }
     public int price { get; set; }
     public DateTime dateordered { get; set; } = DateTime.Now;
+    public int? LocationId { get; set; }
+    public Locations Location { get; set; }
   }
 }

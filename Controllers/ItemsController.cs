@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using jewelryapi.models;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace jewelryapi.controllers
@@ -19,10 +20,10 @@ namespace jewelryapi.controllers
     }
     // Get all items
     [HttpGet]
-    public ActionResult<List<Model>> GetAll()
+    public ActionResult<List<Model>> GetAll([FromQuery] int LocationId)
     {
-      var rv = db.Items;
-      return rv.ToList();
+      var data = db.Location.Include(i => i.Items).FirstOrDefault(f => f.id == LocationId);
+      return data.Items;
     }
     // Get each item
     [HttpGet("{id}")]

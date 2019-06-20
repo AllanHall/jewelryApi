@@ -44,5 +44,6 @@ namespace jewelryapi
       modelBuilder.HasAnnotation("ProductVersion", "2.2.0-rtm-35687");
     }
     public DbSet<Model> Items { get; set; }
+    public DbSet<Locations> Location { get; set; }
   }
 }

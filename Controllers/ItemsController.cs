@@ -129,7 +129,7 @@ namespace jewelryapi.controllers
 
     // Get items out of stock by location
     [HttpGet("out-of-stock-by-location")]
-    public ActionResult<List<Model>> GetOutOfStockByStore(int stock, [FromQuery] int? LocationId)
+    public ActionResult<List<Model>> GetOutOfStockByStore([FromQuery] int? LocationId)
     {
       if (LocationId == null)
       {
@@ -154,14 +154,14 @@ namespace jewelryapi.controllers
       ;
       return new Model
       {
+        id = first.id,
         sku = first.sku,
         name = first.name,
         description = first.description,
         stock = first.stock,
         price = first.price,
         dateordered = first.dateordered,
-        LocationId = first.LocationId,
-        Location = first.Location
+        LocationId = first.LocationId
       };
     }
   }

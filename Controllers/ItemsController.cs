@@ -26,8 +26,10 @@ namespace jewelryapi.controllers
       {
         return Unauthorized();
       }
-      var rv = db.Location.Include(i => i.Items).FirstOrDefault(f => f.id == LocationId);
-      return rv.Items;
+      // var rv = db.Location.Include(i => i.Items).FirstOrDefault(f => f.id == LocationId);
+      // return rv.Items;
+      var vr = db.Items.Include(i => i.Location);
+      return vr.ToList();
     }
 
     // Get each item by location
@@ -56,8 +58,8 @@ namespace jewelryapi.controllers
       };
     }
     // Post a new item by location
-    [HttpPost]
-    public ActionResult<Model> Post([FromBody]Model item, [FromQuery] int? LocationId)
+    [HttpPost("{LocationId}")]
+    public ActionResult<Model> Post([FromBody]Model item, int? LocationId)
     {
       if (LocationId == null)
       {
@@ -79,9 +81,15 @@ namespace jewelryapi.controllers
     }
     // Update an item
     [HttpPut("{id}")]
-    public ActionResult<Model> Put(int id, [FromBody]Model item)
+    public ActionResult<Model> Put(int id, [FromBody]Model item, [FromQuery] int? LocationId)
     {
-      var data = db.Items.FirstOrDefault(f => f.id == id);
+      var data = db.Items
+      .Where(w => w.LocationId == LocationId.GetValueOrDefault())
+      .FirstOrDefault(f => f.id == id);
+      // Changes location of book from URL
+      // data.LocationId = LocationId;
+      // Changes location of book from body
+      // data.LocationId = item.LocationId;
       data.sku = item.sku;
       data.name = item.name;
       data.description = item.description;
@@ -121,18 +129,40 @@ namespace jewelryapi.controllers
 
     // Get items out of stock by location
     [HttpGet("out-of-stock-by-location")]
-    public ActionResult<List<Model>> GetOutOfStockByStore(int stock)
+    public ActionResult<List<Model>> GetOutOfStockByStore(int stock, [FromQuery] int? LocationId)
     {
-      var outOfStock = db.Items.Where(item => (item.stock == 0));
+      if (LocationId == null)
+      {
+        return Unauthorized();
+      }
+      var outOfStock = db.Items.Where(w => w.LocationId == LocationId.GetValueOrDefault()).Where(item => (item.stock == 0));
       return outOfStock.ToList();
     }
 
     // Get item based on SKU
     [HttpGet("sku/{sku}")]
-    public ActionResult<Model> GetOneBySku(int sku)
+    public ActionResult<Model> GetOneBySku(int sku, [FromQuery] int? LocationId)
     {
-      var item = db.Items.FirstOrDefault(f => f.sku == sku);
-      return item;
+      if (LocationId == null)
+      {
+        return Unauthorized();
+      }
+      var first = db.Location
+      .Include(i => i.Items)
+      .FirstOrDefault(f => f.id == LocationId)
+      .Items.FirstOrDefault(item => item.sku == sku)
+      ;
+      return new Model
+      {
+        sku = first.sku,
+        name = first.name,
+        description = first.description,
+        stock = first.stock,
+        price = first.price,
+        dateordered = first.dateordered,
+        LocationId = first.LocationId,
+        Location = first.Location
+      };
     }
   }
 }

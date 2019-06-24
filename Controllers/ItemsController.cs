@@ -20,11 +20,12 @@ namespace jewelryapi.controllers
     }
     // Get all items
     [HttpGet]
-    public ActionResult<List<Model>> GetAll([FromQuery] int LocationId)
+    public ActionResult<List<Model>> GetAll()
     {
-      var data = db.Location.Include(i => i.Items).FirstOrDefault(f => f.id == LocationId);
-      return data.Items;
+      var rv = db.Items;
+      return rv.ToList();
     }
+
     // Get each item
     [HttpGet("{id}")]
     public ActionResult<Model> GetOneById(int id)
